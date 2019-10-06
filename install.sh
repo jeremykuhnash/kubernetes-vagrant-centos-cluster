@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # change time zone
-cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-timedatectl set-timezone Asia/Shanghai
+#cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+#timedatectl set-timezone Asia/Shanghai
 rm /etc/yum.repos.d/CentOS-Base.repo
 cp /vagrant/yum/*.* /etc/yum.repos.d/
 mv /etc/yum.repos.d/CentOS7-Base-163.repo /etc/yum.repos.d/CentOS-Base.repo
@@ -132,6 +132,7 @@ cp /vagrant/conf/bootstrap.kubeconfig /etc/kubernetes/
 cp /vagrant/conf/kube-proxy.kubeconfig /etc/kubernetes/
 cp /vagrant/conf/kubelet.kubeconfig /etc/kubernetes/
 
+curl -o /vagrant/kubernetes-server-linux-amd64.tar.gz https://dl.k8s.io/v1.16.0/kubernetes-server-linux-amd64.tar.gz
 tar -xzvf /vagrant/kubernetes-server-linux-amd64.tar.gz --no-same-owner -C /vagrant
 cp /vagrant/kubernetes/server/bin/* /usr/bin
 
@@ -197,6 +198,10 @@ then
     cd /vagrant/addon/dns/
     ./dns-deploy.sh -r 10.254.0.0/16 -i 10.254.0.2 |kubectl apply -f -
     cd -
+
+    echo "install kubectl"
+    curl -L -o /usr/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/v1.16.0/bin/linux/amd64/kubectl
+    chmod +x /usr/bin/kubectl
 
     echo "deploy kubernetes dashboard"
     kubectl apply -f /vagrant/addon/dashboard/kubernetes-dashboard.yaml
